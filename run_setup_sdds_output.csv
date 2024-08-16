@@ -1,0 +1,77 @@
+import struct
+import csv
+
+def safe_decode(field, dtype):
+    if dtype == 'string':
+        try:
+            return field.decode('utf-8').strip('\x00').strip()
+        except UnicodeDecodeError:
+            return field.hex()
+    return field
+
+def sdds_to_csv(sdds_file_path, csv_file_path):
+    with open(sdds_file_path, 'rb') as file:
+        header_lines = [file.readline().decode('utf-8') for _ in range(20)]
+
+    columns = []
+    data_types = []
+
+    for line in header_lines:
+        if line.startswith('&column'):
+            parts = line.split()
+            name = next(part.split('=')[1] for part in parts if part.startswith('name='))
+            dtype = next(part.split('=')[1] for part in parts if part.startswith('type='))
+            columns.append(name)
+            data_types.append(dtype.strip(','))
+
+    sdds_to_struct = {
+        'long': 'i',
+        'double': 'd',
+        'string': None  # Strings will require dynamic handling
+    }
+
+    binary_format = ''
+    for dtype in data_types:
+        if dtype == 'string':
+            binary_format += 's'  # We'll handle string sizes dynamically
+        else:
+            binary_format += sdds_to_struct[dtype]
+
+    binary_data = []
+    with open(sdds_file_path, 'rb') as file:
+        for _ in range(20):
+            file.readline()
+
+        while True:
+            record = file.read(struct.calcsize(binary_format))
+            if not record:
+                break
+
+            record_fields = []
+            offset = 0
+            for dtype in data_types:
+                if dtype == 'string':
+                    # Assume strings end at null byte or are of a specific size
+                    string_end = record.find(b'\x00', offset)
+                    if string_end == -1:
+                        string_end = len(record)
+                    string_size = string_end - offset
+                    field = record[offset:offset + string_size]
+                    offset += string_size
+                else:
+                    field = struct.unpack_from(sdds_to_struct[dtype], record, offset)[0]
+                    offset += struct.calcsize(sdds_to_struct[dtype])
+
+                record_fields.append(safe_decode(field, dtype))
+
+            binary_data.append(record_fields)
+
+    with open(csv_file_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(columns)
+        writer.writerows(binary_data)
+
+if __name__ == "__main__":
+    sdds_file_path = "run_setup.sigma.sdds"  # Replace with your actual file path
+    csv_file_path = "run_setup_sdds_output.csv"
+    sdds_to_csv(sdds_file_path, csv_file_path)
