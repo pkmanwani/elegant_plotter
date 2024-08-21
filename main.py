@@ -9,7 +9,7 @@ plt.rcParams['figure.dpi'] = 300  # Adjust the DPI as needed
 # Set global font size
 plt.rcParams['font.size'] = 15 # Adjust the font size as needed
 current_directory=os.getcwd()
-main_directory = os.path.join(current_directory,'run4')
+main_directory = os.path.join(current_directory,'run6')
 # Read the CSV file into a DataFrame
 df = pd.read_csv(os.path.join(main_directory,'run_setup.sigma.csv'), delimiter=',')
 
@@ -108,19 +108,24 @@ for element_name, group_data in grouped_df:
             ax_lattice.text(element_label_position, -0.35, element_name.strip(), ha='center', va='center', color='black',size='10')
     '''
 # Find the minimum 'Sx' value between s=4 and s=6
-min_sx_value_between_4_and_6 = y_data[(x_data >= 1) & (x_data <= 3)].min()
-min_sx_index = y_data[(x_data >= 1) & (x_data <= 3)].idxmin()
+min_sx_value_between_4_and_6 = y_data[(x_data >= 5) & (x_data <= 7)].min()
+min_sx_index = y_data[(x_data >= 5) & (x_data <= 7)].idxmin()
 min_sx_s_value = x_data[min_sx_index]
+
+# Find the minimum 'Sx' value between s=4 and s=6
+min_sx_value_between_4_and_6 = y_data[(x_data >= 4) & (x_data <= 6)].min()
+min_sx_index_2 = y_data[(x_data >= 4) & (x_data <= 6)].idxmin()
+min_sx_s_value_2 = x_data[min_sx_index_2]
 
 # Add rectangle patch with text "Plasma chamber"
 initial_s_value = x_data.iloc[0]
-rectangle_center = initial_s_value # Center point of the rectangle
+rectangle_center = min_sx_s_value # Center point of the rectangle
 rect_width = 2 * 0.04  # Total width of the rectangle
 ax_lattice.add_patch(plt.Rectangle((rectangle_center - 0.04, -0.25), rect_width, 0.5, edgecolor='black', facecolor='blue', alpha=0.5, linewidth=1))
 ax_lattice.text(rectangle_center, 0.35, 'Plasma', ha='center', va='center',color='black',size='10')
 
 # Add rectangle patch with text "Ante chamber"
-rectangle_center = min_sx_s_value # Center point of the rectangle
+rectangle_center = min_sx_s_value_2 # Center point of the rectangle
 print(f'Ante chamber : {rectangle_center}')
 chamber_width = 2*0.106
 ax_lattice.add_patch(plt.Rectangle((rectangle_center - (chamber_width/2), -0.25), chamber_width, 0.5, edgecolor='black', facecolor='green', alpha=0.5, linewidth=1))
