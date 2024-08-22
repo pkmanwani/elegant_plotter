@@ -10,7 +10,7 @@ plt.rcParams['figure.dpi'] = 300  # Adjust the DPI as needed
 # Set global font size
 plt.rcParams['font.size'] = 15  # Adjust the font size as needed
 current_directory = os.getcwd()
-main_directory = os.path.join(current_directory, 'run6')
+main_directory = os.path.join(current_directory, 'run11')
 
 # Read the CSV file into a DataFrame
 df = pd.read_csv(os.path.join(main_directory, 'run_setup.sigma.csv'), delimiter=',')
@@ -68,6 +68,7 @@ min_sx_s_value = x_data[min_sx_index]
 min_sx_value_between_4_and_6 = sigma_x[(x_data >= 4) & (x_data <= 6)].min()
 min_sx_index_2 = sigma_x[(x_data >= 4) & (x_data <= 6)].idxmin()
 min_sx_s_value_2 = x_data[min_sx_index_2]
+
 
 # Add rectangle patches for chambers
 rectangle_center = min_sx_s_value
