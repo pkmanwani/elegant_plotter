@@ -9,7 +9,7 @@ plt.rcParams['figure.dpi'] = 300  # Adjust the DPI as needed
 # Set global font size
 plt.rcParams['font.size'] = 15 # Adjust the font size as needed
 current_directory=os.getcwd()
-main_directory = os.path.join(current_directory,'run11')
+main_directory = os.path.join(current_directory,'40_run1')
 # Read the CSV file into a DataFrame
 df = pd.read_csv(os.path.join(main_directory,'run_setup.sigma.csv'), delimiter=',')
 
