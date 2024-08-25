@@ -25,20 +25,21 @@ betax_data = df['betaxBeam']  # Multiply by 1e3 to convert from m to mm
 betay_data = df['betayBeam'] # Multiply by 1e3 to convert from m to mm
 
 # Create figure and subplots
-fig, (ax_betax, ax_main, ax_lattice) = plt.subplots(nrows=3, ncols=1, gridspec_kw={'height_ratios': [4, 4, 2]}, sharex=True)
+fig, (ax_main, ax_lattice) = plt.subplots(nrows=2, ncols=1, gridspec_kw={'height_ratios': [4, 2]}, sharex=True)
 
 # Plot betax and betay data
-ax_betax.plot(x_data, betax_data,label=r'$\beta_x$')
-ax_betax.plot(x_data, betay_data,label=r'$\beta_y$')
-ax_betax.set_ylabel('(m)')
-ax_betax.legend(loc='upper left')
-ax_betax.grid(True)
+#ax_betax.plot(x_data, betax_data,label=r'$\beta_x$')
+#ax_betax.plot(x_data, betay_data,label=r'$\beta_y$')
+#ax_betax.set_ylabel('(m)')
+#ax_betax.legend(loc='upper left')
+#ax_betax.grid(True)
 
 # Plot the main data
-ax_main.plot(x_data, y_data*1e3,label=r'$\sigma_x$')
-ax_main.plot(x_data, y2_data*1e3,label=r'$\sigma_y$')
+ax_main.plot(x_data, 4*y_data*1e3,label=r'$4\sigma_x$')
+ax_main.plot(x_data, 4*y2_data*1e3,label=r'$4\sigma_y$')
 ax_main.set_ylabel(r'(mm)')
 ax_main.legend(loc='upper left')
+
 # ax_main.set_title('Plot of s vs Sx')
 
 # Add grid to main plot
@@ -121,28 +122,36 @@ min_sx_s_value_2 = x_data[min_sx_index_2]
 initial_s_value = x_data.iloc[0]
 rectangle_center = min_sx_s_value # Center point of the rectangle
 rect_width = 2 * 0.04  # Total width of the rectangle
-ax_lattice.add_patch(plt.Rectangle((rectangle_center - 0.04, -0.5), rect_width, 0.4, edgecolor='black', facecolor='blue', alpha=0.5, linewidth=1))
+ax_lattice.add_patch(plt.Rectangle((rectangle_center - 0.04, -0.25), rect_width, 0.5, edgecolor='black', facecolor='blue', alpha=0.5, linewidth=1))
 ax_lattice.text(rectangle_center, 0.35, 'Plasma', ha='center', va='center',color='black',size='10')
+
+# Add rectangle patch with text "Ante chamber"
+rectangle_center = min_sx_s_value # Center point of the rectangle
+print(f'Plasma chamber : {rectangle_center}')
+chamber_width = 2*0.106
+ax_lattice.add_patch(plt.Rectangle((rectangle_center - (chamber_width/2), -0.4), chamber_width, 0.8, edgecolor='black', facecolor='green', alpha=0.2, linewidth=2))
+#ax_lattice.text(rectangle_center, 0.35, 'Ante Chamber', ha='center', va='center',color='black',size='10')
 
 # Add rectangle patch with text "Ante chamber"
 rectangle_center = min_sx_s_value_2 # Center point of the rectangle
 print(f'Ante chamber : {rectangle_center}')
 chamber_width = 2*0.106
-ax_lattice.add_patch(plt.Rectangle((rectangle_center - (chamber_width/2), -0.25), chamber_width, 0.5, edgecolor='black', facecolor='green', alpha=0.5, linewidth=4))
+ax_lattice.add_patch(plt.Rectangle((rectangle_center - (chamber_width/2), -0.4), chamber_width, 0.8, edgecolor='black', facecolor='green', alpha=0.5, linewidth=1))
 ax_lattice.text(rectangle_center, 0.35, 'Ante Chamber', ha='center', va='center',color='black',size='10')
 
 # Hide x-axis ticks and labels for the main plot
 plt.setp(ax_main.get_xticklabels(), visible=False)
 
 # Customize the lattice subplot
+ax_main.set_ylim(0, 10)
 ax_lattice.set_ylim(-0.5, 0.5)
-ax_lattice.set_xlim(6.5, 6.8)
+ax_lattice.set_xlim(min_sx_s_value_2-0.12, min_sx_s_value_2+0.12)
 ax_lattice.set_yticks([])
 ax_lattice.set_ylabel('Element')
 
 # Show plot
 plt.xlabel('s (m)')
 plt.tight_layout()
-plt.savefig(os.path.join(main_directory,'sigma.png'))
-plt.savefig(os.path.join(main_directory,'sigma.pdf'))
+plt.savefig(os.path.join(main_directory,'6sigma.png'))
+plt.savefig(os.path.join(main_directory,'6sigma.pdf'))
 
